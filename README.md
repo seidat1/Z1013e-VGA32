@@ -1,15 +1,19 @@
 # Z1013e-VGA32
 Z1013 Emulation auf VGA32 (ESP32)
 
-Z1013 in klein
+#Z1013 in Klein
 
 Bei vielen Computerbegeisterten ist es so, dass sie eine besondere Beziehung zu ihrem ersten Computer haben. Dort kennt man sich aus.
 Meine erste große Liebe war ein Z1013 zu dessen Geschichte ich nichts sagen möchte, da im Internet genug dazu geschrieben ist. Nur soviel: Auch ich war in Erfurt und musste meinen Z1013 abholen.
 Viel wurde verändert. Tastatur, Speicher, Stromversorgung, RAM-Disk uvm. kamen dazu. Leider sind nicht alle Teile erhalten. 
+
 Heute ist es schwer einen unverbastelten Z1013 zu bekommen. Die Preise sind unangemessen hoch. Zusatzmodule sind nicht zu bekommen. Wenn man wirklich etwas Neues für diesen Computer bauen möchte, scheitert es oft an den Steckverbindern, die schon lange nicht mehr produziert werden. Ein Ersatz gibt es nicht. Zumal die Steckverbinder ein ungewöhnliches Maß besitzen. 2,5 mm Raster gibt es heute nicht. Und bei 29 Pins machen 28 x 0,04 mm schon etwas aus.
+
 Trotzdem ich Elektroniker bin, habe ich mich dazu entschlossen, eine Alternative zu suchen, bei der es kein Beschaffungsproblem gibt. Die meisten Programme des Z1013 liegen heute in digitaler Form vor, sodass es sich kaum lohnt, Programme von der Kassette auf eine Festplatte oder gar Diskette zu transferieren. Zumal es heute bessere Speichermöglichkeiten, wie USB-Stick und SD-Karte, gibt.
+
 Wie es der Zufall so will, arbeite ich heute gerne mit dem ESP32.
 Da liegt es doch nahe, etwas damit zu machen. Die Wahl ist auf ein fertiges Modul gefallen. Es ist unter der Bezeichnung VGA32 bekannt. Dies ist ein vollwertiger ESP32 mit einer VGA-Schnittstelle und 2 PS/2 Schnittstellen für Tastatur und Maus. Ein SD-Karten-Slot ist auch vorhanden. Es sei noch eine Anschlussmöglichkeit für Soundgeräte und eine Buchse für einen Akku erwähnt. Eine genaue Beschreibung dieses Moduls ist im Internet zu finden.
+
 Der ESP32 bietet genug Speicher um einen Z80-Emulator und die Software für die Ansteuerung des VGA-Monitors unterzubringen.
 Der RAM ist auch großgenug für die 64KB eines Z80-Systems. 
 Mir war es wichtig, das Original-Betriebssystem des Z1013 zu benutzen. Mit einer kleinen Ausnahme ist dies auch gelungen. 
