@@ -63,8 +63,7 @@ void progsel(boolean sdini)
         }
         // Lies die ersten 32 Byte der Datei
         sprintf(buf, "%s/%s", directory, filename);
-        //Header = readHeadSPIFF(buf);
-        Header = readHead(SPIFF,buf);
+        Header = readHeadSPIFF(buf);
         Fsys = "SPIFF";
       }
 
