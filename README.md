@@ -14,7 +14,6 @@ Trotzdem ich Elektroniker bin, habe ich mich dazu entschlossen, eine Alternative
 Wie es der Zufall so will, arbeite ich heute gerne mit dem ESP32.
 Da liegt es doch nahe, etwas damit zu machen. Die Wahl ist auf ein fertiges Modul gefallen. Es ist unter der Bezeichnung VGA32 bekannt. Dies ist ein vollwertiger ESP32 mit einer VGA-Schnittstelle und 2 PS/2 Schnittstellen für Tastatur und Maus. Ein SD-Karten-Slot ist auch vorhanden. Es sei noch eine Anschlussmöglichkeit für Soundgeräte und eine Buchse für einen Akku erwähnt. Eine genaue Beschreibung dieses Moduls ist im Internet zu finden.
 
-[VGA32](seidat1.github.com/Z1013e-VGA32/Bilder/VGA32.jpg)
 ![VGA32](Bilder/VGA32.jpg)
 
 
