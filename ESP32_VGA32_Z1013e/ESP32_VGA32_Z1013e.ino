@@ -57,157 +57,26 @@ uint8_t  z80Val;
 uint8_t  InputS7;
 
 
-#define KassetteOut 13
-#define KassetteIn 2
-#define halfTakt 14
+#define KassetteOut 2
+#define halfTakt 13
+uint8_t K;
 int16_t TaktDiff;
 boolean Frequenzanpassung = false;
-int16_t L_Buffer[6000];
-int16_t counter = 0;
 
 uint16_t count=100;
-
-//struct Button {
-//    const uint8_t PIN;
-//    uint32_t numberKeyPresses;
-//    bool pressed;
-//};
-
-
-//Button button2 = {13, 0, false};
 
 
 auto keyboard = PS2Controller.keyboard();
 hw_timer_t *Timer3_Cfg = NULL;
-hw_timer_t *Timer1_Cfg = NULL; 
 
-uint16_t Pruefsumme;
-uint8_t bitcounter = 16;
-uint8_t wordcounter = 16;
-uint8_t onecounter = 2;
-uint8_t halfcounter = 2;
-uint16_t readword = 0;
-uint16_t Ziel;
-uint16_t Ende;
-uint8_t Step;
-uint16_t leader;
-uint16_t firstleader = 100;
 
 //--------------------------------------------------------------------------------------
-
-void IRAM_ATTR isr()
-{
-//  Serial.print(".");
-  uint16_t timeX = timerRead(Timer1_Cfg);
-  timerRestart(Timer1_Cfg);
-//  Serial.println(timeX);
-  if (counter > 4)  // die ersten 4 Werte werden ignoriert
-  {
-    uint8_t error = 0;
-    if (timeX<3900 and timeX>2100 and Step == 0)
-    { // Es wurde ein Pegelwechsel des Vorspanns erkannt
-      // setze die Prüfgsumme auf 0
-      Pruefsumme = 0;
-      bitcounter = 0;
-      wordcounter = 0;
-      onecounter = 0;
-      halfcounter = 0;
-      readword = 0;
-      leader++;
-//      Serial.println(leader);
-    }
-    else if (timeX<1950 and timeX>1050 and Step == 20)
-    { // jetzt wurde die zweite "1" erkannt
-      onecounter++;
-      Step = 30;
-//      Serial.println("Y");
-    }
-    else if (timeX<1950 and timeX>1050 and Step == 0 and leader>firstleader)
-    { // jetzt wurde eine "1" erkannt
-      onecounter++;
-      Step = 20;
-//      Serial.println("X");
-    }
-    else if (timeX<1950 and timeX>1050 and Step == 30)
-    { // das ist ein 1-Bit
-      readword = readword >> 1;
-      readword |= 0x8000;
-      bitcounter++;
-//      Serial.println("1");
-    }
-    else if (timeX<1001 and timeX>539 and halfcounter == 0 and Step == 30)
-    { // das ist der erste Teil einer 0 
-      halfcounter = 1;
-    }
-    else if (timeX<1001 and timeX>539 and halfcounter == 1 and Step == 30)
-    { // jetzt wurde das ganze 0-Bit erkannt
-      readword = readword >> 1;
-      readword &= 0x7FFF;
-      bitcounter++;
-      halfcounter = 0;
-//      Serial.println("0");
-    }
-//    else Error = 1;
-//      Serial.println(readword, HEX);
-
-    if (bitcounter == 16)
-    { // ein Word wurde jetzt eingelesen
-//      Serial.println(readword, HEX);
-      if (wordcounter == 0)
-      { // das erste word muss 0x0000 sein
-        // hier kommt die Prüfung hin 
-//        Serial.print("#");
-        if (readword !=0) Serial.println("0-Fehler");
-        wordcounter++;
-      }
-      else if (wordcounter==17)
-      {
-        // das ist die Prüfsumme
-        // Serial.print("P");
-        // Serial.print(readword, HEX);
-        // Serial.println(Pruefsumme, HEX);
-        if (readword - Pruefsumme == 0) 
-        {
-          Serial.println("OK");
-        }
-        else
-        {
-          Serial.println("P-Fehler");
-        }
-        if (Ziel>Ende) detachInterrupt(KassetteIn);
-        Pruefsumme = 0;
-        bitcounter = 0;
-        wordcounter = 0;
-        onecounter = 0;
-        halfcounter = 0;
-        readword = 0;
-        leader = 0;
-        firstleader = 8;
-        counter = 0;
-        Step = 0;
-      }
-      else if (wordcounter>0 and wordcounter<17)
-      {
-//       Serial.println(Ziel, HEX);
-       // nun kann das Word abgelegt werden
-        if (Ziel<=Ende) WrZ80(Ziel++, readword % 256);
-        if (Ziel<=Ende) WrZ80(Ziel++, readword / 256);
-        Pruefsumme += readword;
-        wordcounter++;
-      }
-      bitcounter = 0;
-    }
-  }
-  counter++;
-}
 
 void IRAM_ATTR Timer3_ISR()
 {
 //  digitalWrite(halfTakt, !digitalRead(halfTakt));
-  TaktDiff = TaktDiff - 6;    // 6 => 1MHz; 12 => 2MHz  (2MHz geht nur für den S-Befehl)
+  TaktDiff = TaktDiff - 12;
 }
-
-
 
 // Memory write -- write the Value to memory location Addr
 void WrZ80(register zword Addr, register byte Value)
@@ -251,10 +120,12 @@ void OutZ80(register zword Port, register byte Value)
     if ((Value & 0x80) == 0x80)
     {
       digitalWrite(KassetteOut, HIGH);
+      K = 1;
     }
     else
     {
       digitalWrite(KassetteOut, LOW);
+      K = 0;
     }
   }
 }
@@ -265,34 +136,21 @@ void OutZ80(register zword Port, register byte Value)
 // Can be left empty as long as it returns a byte.
 byte InZ80(register zword Port)
 {
-  uint8_t Output = 0;
   if ((Port & 0x0F) == 2) // der Port für Input muss 2 sein
-  {
     if ((z80Port) == 8) // der letze Ausgabeport muss 8 sein
     {
       if (z80Val == 7) InputS7++;
       else if (z80Val == 0) InputS7 = 0;
-      Output = Taste;
+      return Taste;
     }
-    if (digitalRead(KassetteOut) == HIGH)
+    if (digitalRead(KassetteOut) == 1)
     {
-      Output |= 0x80; 
+      return 0x80; 
     }
     else
     {
-      Output &= ~0x80; // also 0x7F
+      return 0x00;
     }
-    // vom Tonband einlesen
-    if (digitalRead(KassetteIn) == HIGH)
-    {
-      Output |= 0x40;
-    }
-    else
-    {
-      Output &= ~0x40;
-    }
-  }
-  return Output;
 }
 
 
@@ -316,8 +174,8 @@ void setup()
   ptr[59] = ram_bild[0];
   ptr[60] = eprom[0];
   ptr[61] = eprom[1];
-  ptr[62] = eprom[2];
-  ptr[63] = eprom[3];
+//  ptr[62] = eprom[2];
+//  ptr[63] = eprom[3];
 
   // Zeiger auf die Berechtigung Lesen oder Lesen und Schreiben
   ptrRW = sto_rw;
@@ -340,15 +198,15 @@ void setup()
 
  
 //  pinMode(halfTakt, OUTPUT);
-//  pinMode(KassetteOut, OUTPUT);
+  pinMode(KassetteOut, OUTPUT);
 
   keyboard = PS2Controller.keyboard();
   keyboard->setLayout(&fabgl::GermanLayout);
 
-//  Timer3_Cfg = timerBegin(0, 20, true);
-//  timerAttachInterrupt(Timer3_Cfg, &Timer3_ISR, true);
-//  timerAlarmWrite(Timer3_Cfg, 80, true);
-//  timerAlarmEnable(Timer3_Cfg);
+  Timer3_Cfg = timerBegin(0, 20, true);
+  timerAttachInterrupt(Timer3_Cfg, &Timer3_ISR, true);
+  timerAlarmWrite(Timer3_Cfg, 80, true);
+  timerAlarmEnable(Timer3_Cfg);
 
   Serial.println("Marke Setup End");
 }
@@ -406,24 +264,12 @@ void loop()
         zwZeile1 = 0xF;
       }
     }
-  } // Ende der Tastaturabfrage
-
-
-  // hier wird 1 Befehl ausgeführt
-  StepZ80(&cpu);
-
- 
-  if (Frequenzanpassung)
-  {
-    TaktDiff += cpu.Cycles;
-    while (TaktDiff > 0)
-    {
-      digitalWrite(halfTakt, !digitalRead(halfTakt));
-    }
   }
 
 
-  // Verlangsamung für S-Befehl
+  StepZ80(&cpu);
+
+  
   if (cpu.PC.W == 0xF369)   // starte die Frequenzanpassung
   {
     Serial.printf("Start Timer Interrupt\n");
@@ -438,98 +284,27 @@ void loop()
   } 
 
 
-//  if (counter >= 6000)
-//  {
-//    detachInterrupt(KassetteIn);
-//    counter = 0;
-//
-//    for(uint16_t i=0; i<6000; i++)
-//    {
-//      Serial.print("pos: ");
-//      Serial.print(i);
-//      Serial.print("  Zeit: ");
-//      Serial.println(L_Buffer[i]);
-//    }
-//  }
-
-
-//    if (button2.pressed) {
-//        Serial.printf("Button 2 has been pressed %u times\n", button2.numberKeyPresses);
-//        button2.pressed = false;
-//    }
-  
-  
-  // Verlangsamung für L-Befehl
-  if (cpu.PC.W == 0xF3F8)   // starte die Frequenzanpassung
+  if (cpu.PC.W == 0xF377)   // stoppe die Programmanpassung
   {
-    pinMode(KassetteIn, INPUT_PULLUP);
-    attachInterrupt(KassetteIn, isr, CHANGE);
-
-leader = 0;
-Step = 0;
-firstleader = 100;
-
-    Ziel = RdZ80(0x001B);
-    Ziel += 256 * RdZ80(0x001C);
-
-    Ende = RdZ80(0x001D);
-    Ende += 256 * RdZ80(0x001E);
-
-    Serial.print("Ziel: ");
-    Serial.print(Ziel, HEX);
-    Serial.print("   Ende: ");
-    Serial.println(Ende, HEX);
-
-//    pinMode(KassetteIn, INPUT_PULLUP);
-    // Versuche den Vorspann zu erkennen
-
- //   attachInterrupt(KassetteIn, Ext_INT1_ISR, CHANGE);
-    //detachInterrupt(KassetteIn);    
-    
-    // Timer 1 benutzen 
-    // Timer soll hochlaufen,  damit ein Puls gemessen werden kann
-    // 
-    uint8_t num = 1;
-    uint16_t divider = 40;    // damit wird alle 0,5 µs gezählt
-    boolean countUp = true;
-    Timer1_Cfg = timerBegin(num, divider, countUp);
-    timerWrite(Timer1_Cfg, 0);
-    counter = 0;
-    timerStart(Timer1_Cfg);  
-   
-    
-    cpu.PC.W = 0xF3F7;
-    
-    
-//    Serial.printf("Start Timer Interrupt\n");
-//    pinMode(halfTakt, OUTPUT);
-//    pinMode(KassetteIn, INPUT);
-//    Timer3_Cfg = timerBegin(0, 20, true);
-//    timerAttachInterrupt(Timer3_Cfg, &Timer3_ISR, true);
-//    timerAlarmWrite(Timer3_Cfg, 25, true);
-//    timerAlarmEnable(Timer3_Cfg);
-//    Frequenzanpassung = true;
-//    TaktDiff = 0;
-  } 
-
-  
-  // Ende der Verlangsamung
-  // Da beide Programme mit einem "RET C" verlassen werden, muss auch das C-Flag ausgewertet werden
-  if (cpu.PC.W == 0xF377 or cpu.PC.W == 0xF414)   // stoppe die Frequenzanpassung
-  {
-    if (cpu.AF.B.l & C_FLAG == C_FLAG)
+    if (cpu.AF.B.l&C_FLAG == C_FLAG)
     {
       Frequenzanpassung = false;
       timerAlarmDisable(Timer3_Cfg);
       pinMode(halfTakt, INPUT);
       pinMode(KassetteOut, INPUT);
       Serial.printf("Ende Timer Interrupt\n");
-      Serial.print("Counter: ");
-      Serial.println(counter);
     }
   }
 
 
+  if (Frequenzanpassung)
+  {
+    TaktDiff = TaktDiff + cpu.Cycles;
+    while (TaktDiff > 0)
+    {
+      digitalWrite(halfTakt, !digitalRead(halfTakt));
+    }
+  }
 }
 
 
