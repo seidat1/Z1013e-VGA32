@@ -1,0 +1,2 @@
+# Z1013e-VGA32
+Z1013 Emulation auf VGA32 (ESP32)
