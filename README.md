@@ -1,7 +1,7 @@
 # Z1013e-VGA32
 Z1013 Emulation auf VGA32 (ESP32)
 
-#Z1013 in Klein
+Z1013 in Klein
 
 Bei vielen Computerbegeisterten ist es so, dass sie eine besondere Beziehung zu ihrem ersten Computer haben. Dort kennt man sich aus.
 Meine erste große Liebe war ein Z1013 zu dessen Geschichte ich nichts sagen möchte, da im Internet genug dazu geschrieben ist. Nur soviel: Auch ich war in Erfurt und musste meinen Z1013 abholen.
@@ -21,6 +21,7 @@ Zur Geschwindigkeit ist zu sagen, dass sie in etwa an die 2MHz Variante des Z101
  
 Eins der großen Probleme war es, die Tastatur anzupassen, sodass eine PS/2-Tastatur am Monitorprogramm des Z1013 läuft. Wie erwähnt, war es nicht das Ziel die Software des Z1013 anzupassen. Es läuft ein original Monitorprogramm 2.02 mit der Größe von 2kB. Vielmehr war es die Schwierigkeit die Tastatur so anzupassen, dass die richtigen Signale vom ESP32 an die Software des Z1013 gesendet werden.
 Damit entsteht aber ein weiteres Problem. Viele Z1013 wurden  umgebaut und Hard- und Software so angepasst, dass man eine Schreibmaschinentastatur anschließen konnte. Auf diese wurde hier keine Rücksicht genommen. Wenn es Software gibt, die mit der originalen Software für die 8x4-Tastatur nicht läuft, wird sie mit dieser Emulation auch nicht laufen. Auch Anpassungen, um die 8x4-Tastaturroutine schneller zu machen, wie ich es in einigen Spielen gesehen habe, werden zurzeit nicht berücksichtigt.
+
 Wenn jemand Lust hat, mit mir weiter an diesem Projekt zu arbeiten, kann er gerne mit mir in Kontakt treten und wir werden uns einigen, wer was macht.
 In Planung ist, dass man einen Kassettenrekorder anschließen kann, um die Software von Kassette einzulesen. 
 Dafür wird dann auch eine Möglichkeit benötigt, um die Programme auf SD-Karte abzuspeichern.
