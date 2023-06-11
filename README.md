@@ -28,6 +28,6 @@ Damit entsteht aber ein weiteres Problem. Viele Z1013 wurden  umgebaut und Hard-
 Wenn jemand Lust hat, mit mir weiter an diesem Projekt zu arbeiten, kann er gerne mit mir in Kontakt treten und wir werden uns einigen, wer was macht.
 In Planung ist, dass man einen Kassettenrekorder anschließen kann, um die Software von Kassette einzulesen. 
 Dafür wird dann auch eine Möglichkeit benötigt, um die Programme auf SD-Karte abzuspeichern.
-Eine weitere Idee ist, den RAM zu erweitern, somit wäre eine RAM-Disk möglich der VGA32 (ESP32) hat 520kB RAM von dem noch viel ungenutzt ist. 
+Eine weitere Idee ist, den RAM zu erweitern, somit wäre eine RAM-Disk möglich. Der VGA32 (ESP32) hat 520kB RAM von dem noch viel ungenutzt ist. 
 
 Guido alias seidat
