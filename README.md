@@ -30,4 +30,4 @@ In Planung ist, dass man einen Kassettenrekorder anschließen kann, um die Softw
 Dafür wird dann auch eine Möglichkeit benötigt, um die Programme auf SD-Karte abzuspeichern.
 Eine weitere Idee ist, den RAM zu erweitern, somit wäre eine RAM-Disk möglich der VGA32 (ESP32) hat 520kB RAM von dem noch viel ungenutzt ist. 
 
-Guido alias seidat
+Jona alias stone
